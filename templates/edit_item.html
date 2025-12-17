@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Item: {{ item.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-xl">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit Item: {{ item.name }}</h1>
+
+    <form method="POST">
+        <div class="mb-4">
+            <label for="name" class="block text-sm font-medium text-gray-700">Item Name</label>
+            <input type="text" id="name" name="name" value="{{ item.name }}" required
+                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+        </div>
+
+        <div class="mb-4">
+            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea id="description" name="description" rows="3"
+                      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">{{ item.description }}</textarea>
+        </div>
+        
+        <div class="mb-4">
+            <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+            <input type="text" id="category" name="category" value="{{ item.category or '' }}"
+                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+        </div>
+        
+        <div class="mb-4">
+            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+            <select id="status" name="status" required
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+                <option value="Found" {% if item.status == 'Found' %}selected{% endif %}>Found</option>
+                <option value="Lost" {% if item.status == 'Lost' %}selected{% endif %}>Lost</option>
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label for="date_lost" class="block text-sm font-medium text-gray-700">Date Lost / Found (YYYY-MM-DD)</label>
+            <input type="date" id="date_lost" name="date_lost" value="{{ item.date_lost or '' }}"
+                    max="{{ max_date }}"
+                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+        </div>
+        
+        <div class="border-t pt-4 mt-4 mb-6">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Location Details</h3>
+
+            <div class="mb-4">
+                <label for="item_location" class="block text-sm font-medium text-gray-700">Location Where Item Was Lost/Found (Required)</label>
+                <input type="text" id="item_location" name="item_location" required
+                       value="{{ item.item_location or '' }}"
+                       placeholder="e.g., Main Library Entrance, Room 305"
+                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+            </div>
+
+            <div class="mb-4">
+                <label for="uploader_location" class="block text-sm font-medium text-gray-700">Uploader's Location (for Admin/Verification)</label>
+                <input type="text" id="uploader_location" name="uploader_location"
+                       value="{{ item.uploader_location or '' }}"
+                       placeholder="e.g., Administration Building, Home Address"
+                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+            </div>
+        </div>
+                <div class="mb-4">
+            <label for="picture_url" class="block text-sm font-medium text-gray-700">Picture URL</label>
+            <input type="url" id="picture_url" name="picture_url" value="{{ item.picture_url or '' }}"
+                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+        </div>
+
+        <div class="mb-4 border-t pt-4">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Contact Information (Both Required)</h3>             <label for="contact_email" class="block text-sm font-medium text-gray-700">Contact Email (Required)</label>
+            <input type="email" id="contact_email" name="contact_email" value="{{ item.contact_email or '' }}"
+                   required                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+        </div>
+
+        <div class="mb-4">
+            <label for="contact_phone" class="block text-sm font-medium text-gray-700">Contact Phone (Required)</label>
+            <input type="text" id="contact_phone" name="contact_phone" value="{{ item.contact_phone or '' }}"
+                   required                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2">
+        </div>
+        
+        <button type="submit" class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md shadow hover:bg-blue-700">
+            Save Changes
+        </button>
+        <a href="{{ url_for('view_item', item_id=item.id) }}" class="mt-3 block text-center text-sm text-gray-600 hover:text-gray-800">Cancel</a>
+    </form>
+</div>
+{% endblock %}

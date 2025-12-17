@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}My Pending Items - Awaiting Review{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-6xl mx-auto">
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-extrabold text-yellow-700">
+            ⏳ My Pending Items
+        </h1>
+        <p class="mt-2 text-lg text-gray-600">
+            Items you have submitted that are currently awaiting review and approval by an administrator.
+        </p>
+        <a href="{{ url_for('dashboard') }}"
+           class="mt-4 inline-flex items-center px-4 py-2 border border-yellow-400 text-sm font-medium rounded-xl shadow-sm text-yellow-800 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition duration-150">
+            ← Back to Dashboard
+        </a>
+    </header>
+
+    {% if not items %}
+    <div class="text-center py-16 bg-white rounded-2xl shadow-lg border border-gray-200">
+        <p class="text-2xl text-gray-500 font-semibold mb-2">🎉 All clear!</p>
+        <p class="text-lg text-gray-600">You currently have no items awaiting admin approval.</p>
+    </div>
+    {% else %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for item in items %}
+        {# Card is always highlighted yellow here since all items are pending #}
+        <div class="bg-yellow-50 border-yellow-400 shadow-xl rounded-xl hover:shadow-2xl transition duration-300 border overflow-hidden">
+            <div class="p-5">
+                <div class="flex justify-between items-start mb-3">
+                    <h4 class="text-xl font-bold text-gray-900 line-clamp-1">{{ item.name }}</h4>
+                    
+                    {# Badge: Always PENDING APPROVAL #}
+                    <span class="px-3 py-1 text-xs font-bold rounded-full text-yellow-800 bg-yellow-200">PENDING APPROVAL</span>
+                </div>
+                
+                <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ item.description or 'No description provided.' }}</p>
+                
+                <ul class="space-y-1 text-sm text-gray-600">
+                    <li>Category: {{ item.category or 'N/A' }}</li>
+                    <li>Date: {{ item.date_lost or 'N/A' }}</li>
+                    <li>Status: <span class="font-medium">{{ item.status }}</span></li>
+                </ul>
+                
+                {# 🚨 USER ACTIONS FOR PENDING ITEMS 🚨 #}
+                <div class="mt-4 flex space-x-2">
+                    <a href="{{ url_for('edit_item', item_id=item.id) }}" class="flex-grow text-center py-2 text-sm font-medium text-yellow-700 border border-yellow-700 rounded-lg hover:bg-yellow-100 transition duration-150">
+                        View / Edit Submission
+                    </a>
+
+                    {# "Cancel My Report" button which triggers the DELETE route #}
+                    <form method="POST" action="{{ url_for('delete_item', item_id=item.id) }}" onsubmit="return confirm('Are you sure you want to cancel and delete this report? This action cannot be undone.');" class="w-1/3">
+                        <button type="submit" class="w-full py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Cancel My Report
+                        </button>
+                    </form>
+                </div>
+                
+                <p class="mt-2 text-xs text-yellow-700 text-center font-medium">
+                    *Item is only visible to you and administrators until approved.*
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

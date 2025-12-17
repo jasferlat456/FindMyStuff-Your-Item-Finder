@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Your Item Finder{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-6xl mx-auto">
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-extrabold text-red-700">
+            🚨 Admin Control 🚨
+        </h1>
+        <p class="mt-2 text-lg text-gray-600">
+            View and manage all public/approved items reported by all users.
+        </p>
+        
+        {# --- NEW: ADMIN ACCOUNT SETTINGS --- #}
+        <div class="mt-4 inline-flex items-center space-x-4 p-2 bg-gray-100 rounded-lg border border-gray-200 shadow-sm">
+            <span class="text-sm font-medium text-gray-700">Admin Account: <strong>{{ username }}</strong></span>
+            <a href="{{ url_for('change_password') }}" 
+               class="text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center transition duration-150">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                Change Password
+            </a>
+        </div>
+        {# ----------------------------------- #}
+    </header>
+
+    {# --- ACTION REQUIRED BLOCK --- #}
+    {% if has_pending_items %}
+    <div class="mb-6 p-6 bg-red-100 border border-red-400 rounded-xl text-center shadow-md">
+        <h3 class="text-2xl font-bold text-red-800 mb-3">
+            ACTION REQUIRED: Admin Queue
+        </h3>
+        <p class="text-gray-700 mb-4">
+            New items waiting for your approval are managed on the Pending Queue page.
+        </p>
+        <a href="{{ url_for('pending_approval') }}"
+            class="inline-flex items-center px-8 py-3 text-lg font-bold rounded-xl shadow-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150">
+            <svg class="h-6 w-6 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8.257 3.398a1 1 0 00-.868 0L2.735 6.495A1 1 0 002 7.332v5.336c0 .358.18.685.467.868l4.654 2.801a1 1 0 001.076 0l4.654-2.801c.287-.183.467-.51.467-.868V7.332a1 1 0 00-.735-.837l-4.654-3.097zM10 5.828l3.18 1.908L10 9.644 6.82 7.736 10 5.828zm-2 7.02l-3 1.8V8.152l3 1.8v3.696zm4 0V9.952l3-1.8v5.368l-3-1.8z" clip-rule="evenodd"></path></svg>
+            Go to Pending Approval Queue
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="mb-8 p-6 bg-gray-50 rounded-2xl shadow-inner border border-gray-200">
+        <h3 class="text-xl font-bold text-gray-700 mb-4">🔍 Filter & Sort Items</h3>
+        <form method="GET" action="{{ url_for('dashboard') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <div>
+                <label for="filter_status" class="block text-sm font-medium text-gray-700 mb-1">Status:</label>
+                <select id="filter_status" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Status</option>
+                    <option value="Lost" {% if request.args.get('status') == 'Lost' %}selected{% endif %}>Lost Items</option>
+                    <option value="Found" {% if request.args.get('status') == 'Found' %}selected{% endif %}>Found Items</option>
+                    <option value="Claimed" {% if request.args.get('status') == 'Claimed' %}selected{% endif %}>Claimed / Resolved</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="filter_category" class="block text-sm font-medium text-gray-700 mb-1">Category:</label>
+                <select id="filter_category" name="category" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">All Categories</option>
+                    <option value="Electronics" {% if request.args.get('category') == 'Electronics' %}selected{% endif %}>Electronics</option>
+                    <option value="Apparel" {% if request.args.get('category') == 'Apparel' %}selected{% endif %}>Apparel</option>
+                    <option value="Tools" {% if request.args.get('category') == 'Tools' %}selected{% endif %}>Tools</option>
+                    <option value="Documents" {% if request.args.get('category') == 'Documents' %}selected{% endif %}>Documents</option>
+                    <option value="Other" {% if request.args.get('category') == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="sort_by" class="block text-sm font-medium text-gray-700 mb-1">Sort by:</label>
+                <select id="sort_by" name="sort_by" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="date_desc" {% if current_sort == 'date_desc' %}selected{% endif %}>Newest First</option>
+                    <option value="date_asc" {% if current_sort == 'date_asc' %}selected{% endif %}>Oldest First</option>
+                    <option value="name_asc" {% if current_sort == 'name_asc' %}selected{% endif %}>Name (A-Z)</option>
+                    <option value="name_desc" {% if current_sort == 'name_desc' %}selected{% endif %}>Name (Z-A)</option>
+                </select>
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="filter_search" class="block text-sm font-medium text-gray-700 mb-1">Search:</label>
+                <div class="flex space-x-2">
+                    <input type="text" id="filter_search" name="search" value="{{ request.args.get('search', '') }}" placeholder="Search items..." class="flex-grow px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" class="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition duration-150">Apply</button>
+                    {% if request.args.get('status') or request.args.get('category') or request.args.get('search') %}
+                    <a href="{{ url_for('dashboard') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 bg-white hover:bg-gray-100 transition duration-150">Reset</a>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% set approved_items = items | selectattr('is_approved', 'equalto', True) | list %}
+        
+        {% if approved_items %}
+            {% for item in approved_items %}
+            <div class="bg-white border-gray-100 shadow-lg rounded-xl hover:shadow-2xl transition duration-300 border overflow-hidden">
+                <div class="p-5">
+                    <div class="flex justify-between items-start mb-3">
+                        <h4 class="text-xl font-bold text-gray-900 line-clamp-1">{{ item.name }}</h4>
+                        
+                        {% if item.status == 'Lost' %}
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full text-red-800 bg-red-100">Lost Item</span>
+                        {% elif item.status == 'Found' %}
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full text-green-800 bg-green-100">Found Item</span>
+                        {% elif item.status == 'Claimed' %}
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full text-gray-800 bg-gray-200">Claimed</span>
+                        {% else %}
+                            <span class="px-3 py-1 text-xs font-semibold rounded-full text-blue-800 bg-blue-100">{{ item.status }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ item.description or 'No description provided.' }}</p>
+                    
+                    <ul class="space-y-1 text-sm text-gray-600">
+                        <li><strong>Category:</strong> {{ item.category or 'N/A' }}</li>
+                        <li><strong>Date:</strong> {{ item.date_lost or 'N/A' }}</li>
+                        <li><strong>Reported By:</strong> 
+                            {% if item.user_id == current_user_id %}
+                                <span class="font-bold text-teal-600">You!</span>
+                            {% else %}
+                                {{ item.owner_username or 'Unknown' }}
+                            {% endif %}
+                        </li>
+                    </ul>
+
+                    <a href="{{ url_for('view_item', item_id=item.id) }}" class="mt-4 block text-center py-2 text-sm font-medium text-teal-600 border border-teal-600 rounded-lg hover:bg-teal-50 transition duration-150">
+                        View Full Details
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="md:col-span-3 text-center py-12 bg-white rounded-xl shadow-lg border border-gray-100">
+            <p class="text-xl text-gray-500">No approved items match the current filters.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

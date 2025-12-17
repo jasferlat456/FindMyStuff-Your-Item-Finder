@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FindMyStuff{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Light gray background */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Custom Teal Header Background (matches image) */
+        .header-bg {
+            background-color: #00bcd4; /* A vibrant teal */
+            height: 60px;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        /* World Map Background (for login page aesthetic) */
+        .world-bg {
+            background-image: url("https://placehold.co/1200x800/f0f8ff/555?text=.");
+            background-size: cover;
+            background-position: center;
+            opacity: 0.1;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        /* Flash messages styling */
+        .flash-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border-color: #badbcc;
+        }
+        .flash-error, .flash-warning {
+            background-color: #f8d7da;
+            color: #842029;
+            border-color: #f5c2c7;
+        }
+
+        /* --- THE CRITICAL FIX CSS --- */
+        #flash-container {
+            position: fixed; /* Fixed position */
+            top: 4.5rem; /* Positioned below the navigation bar */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000; /* Ensure it's above everything */
+            pointer-events: none; /* CRUCIAL: Allows clicks to pass through empty space */
+            width: 100%;
+            max-width: 400px;
+        }
+        .flash-message {
+            pointer-events: auto; /* Re-enable clicks only on the message box itself */
+        }
+        /* --- END CRITICAL FIX CSS --- */
+
+    </style>
+</head>
+<body class="relative">
+    <div class="header-bg"></div>
+    <div class="world-bg"></div>
+
+    <nav class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center h-16">
+        <div class="flex items-center space-x-2 p-2 bg-white rounded-lg shadow-md">
+            <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-xs font-bold text-gray-700 leading-none">FindMyStuff</span>
+        </div>
+
+        <div class="ml-auto flex items-center space-x-4">
+            {% if 'user' in session %}
+                <a href="{{ url_for('notifications') }}" class="relative text-white hover:text-teal-100 transition duration-150 mr-2 p-1">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                    </svg>
+                    {% if unread_count > 0 %}
+                    <span class="absolute top-0 right-0 flex h-4 w-4 transform translate-x-1 -translate-y-1">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-4 w-4 bg-red-600 text-white text-[10px] items-center justify-center font-bold border border-white">
+                            {{ unread_count }}
+                        </span>
+                    </span>
+                    {% endif %}
+                </a>
+
+                <span class="text-sm font-semibold text-white">Hello, {{ session['user'] }}</span>
+                <a href="{{ url_for('dashboard') }}" class="text-white hover:text-teal-200 text-sm font-medium">Dashboard</a>
+                
+                {% if session.get('role') != 'admin' %}
+                <a href="{{ url_for('add_item') }}" class="text-white hover:text-teal-200 text-sm font-medium">Add Item</a>
+                {% endif %}
+                
+                <a href="{{ url_for('logout') }}" class="px-3 py-1 bg-white text-teal-600 rounded-full text-sm font-bold shadow hover:bg-gray-100 transition duration-150">Logout</a>
+            {% else %}
+                <a href="{{ url_for('signin') }}" class="text-white hover:text-teal-200 text-sm font-medium">Sign In</a>
+                <a href="{{ url_for('signup') }}" class="px-3 py-1 bg-white text-teal-600 rounded-full text-sm font-bold shadow hover:bg-gray-100 transition duration-150">Sign Up</a>
+            {% endif %}
+        </div>
+    </nav>
+    
+    <div id="flash-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message p-3 mx-4 mb-2 rounded-lg shadow-md text-sm text-center font-medium
+                        {% if category == 'success' %}flash-success
+                        {% elif category == 'error' or category == 'warning' %}flash-error
+                        {% else %}bg-blue-100 text-blue-800{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="flex-grow relative z-10 p-4 pt-10 flex flex-col items-center">
+        {% block content %}{% endblock %}
+    </main>
+
+</body>
+</html>
