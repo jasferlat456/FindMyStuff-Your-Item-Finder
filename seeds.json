@@ -1,0 +1,38 @@
+[
+  {
+    "id": 2,
+    "name": "iphone 13 pro max",
+    "category": "Electronics",
+    "status": "Lost",
+    "description": "Silver iphone 13 pro max without case",
+    "location": "Library",
+    "contact_email": "sekwethuhu@gmail.com"
+  },
+  {
+    "id": 4,
+    "name": "Jisulife Mini fan",
+    "category": "Electronics",
+    "status": "Lost",
+    "description": "Left accidentally at Jollibee (SM Lipa) after a meal.",
+    "location": "Jollibee at SM LIPA",
+    "contact_email": "latjasfermoto@gmail.com"
+  },
+  {
+    "id": 5,
+    "name": "Blue Hydro Flask",
+    "category": "Other",
+    "status": "Found",
+    "description": "32oz blue bottle with a Batangas sticker.",
+    "location": "Brgy, Sabang Lipa City",
+    "contact_email": "jasfermotoko@gmail.com"
+  },
+  {
+    "id": 8,
+    "name": "Airpods pro 3rd gen",
+    "category": "Electronics",
+    "status": "Claimed",
+    "description": "Airpods pro 3rd gen with black carbon case",
+    "location": "BSULIPA LIBRARY",
+    "contact_email": "sekwethuhu@gmail.com"
+  }
+]

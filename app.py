@@ -15,8 +15,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'admin'
-app.config['MAIL_PASSWORD'] = 'xgufsnpmionsiqlx'
+app.config['MAIL_USERNAME'] = 'jasfer.ly1@gmail.com'
+app.config['MAIL_PASSWORD'] = 'xuiyzvzuwifuscnv'
 app.config['MAIL_DEFAULT_SENDER'] = 'jasfer.ly1@gmail.com'
 
 db.init_app(app)
